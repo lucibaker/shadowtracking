@@ -1,26 +1,22 @@
 function detect_MP(n)
 % plastic particle detection and tracking
-% input: n = run number
+% see README for documentation
 %
-% images for each run must stored be in folders named 'run1', 'run2', etc
-% image filenames must start with the camera name, e.g. 'CamA_0001.tif'
-% experiment parameters must be stored in a spreadsheet starting with
-%   'run_parameters', e.g. 'run_parameters_demo.xlsx'
-% calibration parameters must be stored in a spreadsheet starting with
-%   'cal_parameters', e.g. 'cal_parameters_demo.xlsx'
+% inputs: 
+% n = run number
 %
 % Luci Baker 2023 (ljbaker36@gmail.com)
 
 %% SETUP - set these variables first 
 
 code_path = 'H:\My Drive\MATLAB\shadowtracking\';  % path to shadowtracking functions
-cal_path = 'H:\My Drive\MATLAB\shadowtracking\calibration_and_bkgd\';   % path to calibration, background, and mask images
+cal_path = 'H:\My Drive\MATLAB\shadowtracking\data_demo\calibration_and_bkgd\';   % path to calibration, background, and mask images
 expt_name = 'demo';  % experiment or dataset name 
 
 % show plots or not
-plot_calibration_on = true; % calibration
-plot_detection_on = true; % detection
-plot_merge_on = true; % merged views
+plot_calibration_on = false; % calibration
+plot_detection_on = false; % detection
+plot_merge_on = false; % merged views
 
 % save outputs or not
 save_on = true;
@@ -28,8 +24,7 @@ save_on = true;
 
 %% get experiment and calibration parameters 
 
-% add path to shadowtracking functions
-addpath([code_path 'calibration functions'])       
+% add path to shadowtracking functions     
 addpath([code_path 'track functions'])
 
 % load experiment params
@@ -46,9 +41,12 @@ nonsphere = strncmp(run_params.ParticleType{n},'d',1) || strncmp(run_params.Part
 
 % image parameters 
 cams = cell2mat(cal_params.Cam)';
-dir_name = sprintf('run%i\\', run_params.Run(n));
+dir_name = sprintf('data_%s\\run%i\\', expt_name, run_params.Run(n));
 imgset = dir(sprintf('%sCam%s*',dir_name,cams(1))); 
 img_nt = length(imgset);
+if isempty(imgset)
+    error('no images found: check path')
+end
 
 img_shifts = floor([run_params.camA_offset_x(n), run_params.camA_offset_y(n); run_params.camC_offset_x(n), run_params.camC_offset_y(n); 
     run_params.camB_offset_x(n), run_params.camB_offset_y(n); run_params.camD_offset_x(n), run_params.camD_offset_y(n)]./2);
@@ -104,11 +102,14 @@ for cam = 1:length(cams)
     
     % read image files from the directory they are in 
     imgset = dir(sprintf('%sCam%s*', dir_name, cams(cam))); 
+    if isempty(imgset)
+        error('no images found: check path')
+    end
 
     % load background and calibration images
-    bkgd = cam_imread(sprintf('%s\\Cam%s-bkgd.tif', cal_path, cams(cam)), cam_left);
-    cal = cam_imread(sprintf('%s\\Cam%s-cal.tif', cal_path, cams(cam)), cam_left);
-    mask = cam_imread(sprintf('%s\\Cam%s-mask.tif', cal_path, cams(cam)), cam_left);
+    bkgd = cam_imread(sprintf('%sCam%s-bkgd.tif', cal_path, cams(cam)), cam_left);
+    cal = cam_imread(sprintf('%sCam%s-cal.tif', cal_path, cams(cam)), cam_left);
+    mask = cam_imread(sprintf('%sCam%s-mask.tif', cal_path, cams(cam)), cam_left);
 
     % background image must be "double" type
     bkgd = double(bkgd);

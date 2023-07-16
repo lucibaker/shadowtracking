@@ -12,7 +12,7 @@ function [tracks, tracklength] = fix_tracks(tracks, tracklength, searchrad, dt, 
 fprintf('\nrepairing broken tracks...')
 
 % plot or not?
-plot_on = true;
+plot_on = false;
 
 if plot_on
     figure;

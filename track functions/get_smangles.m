@@ -38,9 +38,8 @@ if strncmp(particle_type,'r',1)
     [lr_pdf,lr_range] = pdf_var(lr*1000,100,0);
     [lr_pdf2,lr_range2] = pdf_var(lr_shifted*1000,100,0);
     figure; plot(lr_range,lr_pdf,'k.-',lr_range2,lr_pdf2,'r.-')
-    ylabel('PDF'); xlabel('$d$ [mm]'); grid on; %ylim([0 1]); %legend('$d$','$d_{corr}$','location','nw'); xlim([0 3.5])
+    ylabel('PDF'); xlabel('$d$ [mm]'); grid on; 
     title('Rods')
-    goodplot([4 3.5])
 
     % compute angle cosines
     pxyz = calc_orient(th0r,lr_shifted,Dp,particle_type); % px, pz, py
@@ -67,7 +66,6 @@ else
     xlabel('$d$ [mm]'); legend('$d$','$d_{corr}$'); grid on; 
     ylabel('PDF'); 
     title('Disks')
-    goodplot([4 3.5])
     
     % compute angle cosines
     pxyz = calc_orient(th0primer,dr_shifted,Dp,particle_type);  % px, pz, py

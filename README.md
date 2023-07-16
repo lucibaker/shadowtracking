@@ -6,6 +6,14 @@ Baker, L. J., & Coletti, F. (2022). [Experimental investigation of inertial fibr
 
 Baker, L., & DiBenedetto, M. (2023). [Large-scale particle shadow tracking and orientation measurement with collimated light.](https://doi.org/10.1007/s00348-023-03578-y) Experiments in Fluids, 64(3), 52.
 
+
+## Instructions
+
+Create the input files (see *Inputs*)
+
+Run main script: detect_MP.
+
+
 ## Inputs
 
 **run_parameters_demo.xlsx**  
@@ -18,10 +26,10 @@ Spreadsheet containing the calibration parameters for each run. Use the demo spr
 Folder containing calibration image, background image, and mask image for each camera.
 
 **run1, run2, run3**  
-Folders containing the images for each run
+Folders containing the images for each run. Image filenames must start with the camera name, e.g. 'CamA_0001.tif'
 
 
-## Instructions
+## Outputs
 
 
 ## Function descriptions
@@ -49,5 +57,9 @@ functions to operate on particle track data
 
 ## Troubleshooting
 
+**Code takes a long time to run**  
+Switch frame loop to parfor and run on parallel cluster.
 
+**No particles detected**  
+Adjust thresholds in run_parameters spreadsheet.
 
