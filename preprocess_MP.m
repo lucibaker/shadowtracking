@@ -1,14 +1,26 @@
 function [avar_k] = preprocess_MP(n)
-% preprocess_MP
+% preprocess particle tracks:
+% -clean up data
+% -compute orientation (p vector)
+% -apply temporal smoothing to tracks and orientations
 
-gdrive_path = 'H:\My Drive\'; % 'G:\My Drive\';  %  'C:\Users\ljbak\My Drive\';  % 
-addpath([gdrive_path 'MATLAB\fm-toolbox'])
-expt_string = '220613';  % expt set
-% n = 1;  % run number
+%% SETUP - set these variables first
+code_path = 'H:\My Drive\MATLAB\shadowtracking\';  % path to shadowtracking functions
+expt_name = 'demo';  % experiment or dataset name 
+
+plot_on = true;  % make plots?
+
+kernel = 5; % width of gaussian kernel for temporal smoothing
+
+
+%% get experiment parameters
+% add path to shadowtracking functions
+addpath([code_path 'calibration functions'])       
+addpath([code_path 'track functions'])
 
 % load experiment params
 warning off
-run_params = readtable(sprintf('%sMP in OSBL\\imaging expts\\run%s\\run_parameters_%s.xlsx',gdrive_path,expt_string,expt_string));
+run_params = readtable(sprintf('%s\\data_%s\\run_parameters_%s.xlsx', code_path, expt_name, expt_name));
 warning on
 
 fprintf('\nwindspeed = %2.f m/s, particle type = %s\n', run_params.WindSpeed_m_s(n), ...
@@ -18,7 +30,7 @@ nonsphere = strncmp(run_params.ParticleType{n},'d',1) || strncmp(run_params.Part
 
 load(sprintf('tracks_run%02d.mat',n))
 
-% remove center bright spot
+%% remove center bright spot
 spot_x = [0 0.015]; 
 spot_z = [-.3 -.275]; 
 
@@ -54,7 +66,6 @@ tracks0(:,10) = -tracks0(:,10);  % theta
 
 %% smooth tracks
 sm_fn = sprintf('smtracks_run%02d.mat',n);
-kernel = 5;% 0; % [3:2:21]; 
 [smtracks, smtracklength, avar_k] = smooth_tracks(tracks0,kernel,1/run_params.imagingFreq_Hz(n));
 if length(kernel) > 1
     figure; semilogy(kernel,avar_k,'k.'); 
@@ -73,36 +84,37 @@ ntracks = length(smtracklength);
 
 % get smoothed angles
 if nonsphere
-    kernel = 5;% 0;% 
     [smangles, smangles_cont] = get_smangles(tracks0,kernel,1/run_params.imagingFreq_Hz(n),run_params.ParticleType{n},run_params.Dp_m(n), ...
         run_params.d(n),run_params.K(n));
     save(sm_fn,'smangles','smangles_cont','-append');
 end
 
 %% preview tracks
-% % track lengths
-% figure; histogram(smtracklength,100)
-% xlabel('track length [frames]'); ylabel('count')
-% 
-% figure;
-% track_ids = 1:200;% find(smtracklength>300); % round(linspace(1,ntracks,100));  % 1:30; %
-% c = jet(length(track_ids));
-% for i = 1:length(track_ids)
-%     idx = smtracks(:,5)==track_ids(i);
-%     c_idx = ceil(rand*length(track_ids)); % round(smtracklength(track_ids(i))/max(smtracklength(track_ids))*length(track_ids));
-%     plot(smtracks(idx,1),smtracks(idx,2),'.','color',c(c_idx,:));
-%     hold on
-% end
-% axis equal; axis([-.5 .5 -.45 .05]);
-% xlabel('x [m]'); ylabel('y [m]')
+if plot_on
 
-% fidx = smtracks(:,7)==1;
-% pts = plot(smtracks(fidx,1),smtracks(fidx,2),'ko');
-% pause(1/10)
-% for i = 2:1000
-%     fidx = smtracks(:,7)==i;
-%     delete(pts)
-%     pts = plot(smtracks(fidx,1),smtracks(fidx,2),'ko');
-%     pause(1/10)
-% end
-
+    % track lengths
+    figure; histogram(smtracklength,100)
+    xlabel('track length [frames]'); ylabel('count')
+    
+    figure;
+    track_ids = 1:200;% find(smtracklength>300); % round(linspace(1,ntracks,100));  % 1:30; %
+    c = jet(length(track_ids));
+    for i = 1:length(track_ids)
+        idx = smtracks(:,5)==track_ids(i);
+        c_idx = ceil(rand*length(track_ids)); % round(smtracklength(track_ids(i))/max(smtracklength(track_ids))*length(track_ids));
+        plot(smtracks(idx,1),smtracks(idx,2),'.','color',c(c_idx,:));
+        hold on
+    end
+    axis equal; axis([-.5 .5 -.45 .05]);
+    xlabel('x [m]'); ylabel('y [m]')
+    
+    fidx = smtracks(:,7)==1;
+    pts = plot(smtracks(fidx,1),smtracks(fidx,2),'ko');
+    pause(1/10)
+    for i = 2:1000
+        fidx = smtracks(:,7)==i;
+        delete(pts)
+        pts = plot(smtracks(fidx,1),smtracks(fidx,2),'ko');
+        pause(1/10)
+    end
+end
