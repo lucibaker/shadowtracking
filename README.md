@@ -1,4 +1,7 @@
-# shadowtracking: Shadow tracking code for WASIRF plastic particle experiments
+# shadowtracking
+
+Shadow tracking code for WASIRF plastic particle experiments  
+
 
 ## References
 
