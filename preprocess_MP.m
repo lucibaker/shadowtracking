@@ -5,7 +5,7 @@ function [avar_k] = preprocess_MP(n)
 % -apply temporal smoothing to tracks and orientations
 
 %% SETUP - set these variables first
-code_path = 'H:\My Drive\MATLAB\shadowtracking\';  % path to shadowtracking functions
+expt_path = 'H:\My Drive\MATLAB\shadowtracking\';  % path to experiment folder
 expt_name = 'demo';  % experiment or dataset name 
 
 plot_on = false;  % make plots?
@@ -15,11 +15,11 @@ kernel = 3; % width of gaussian kernel for temporal smoothing
 
 %% get experiment parameters
 % add path to shadowtracking functions
-addpath([code_path 'track functions'])
+addpath([expt_path 'track functions'])
 
 % load experiment params
 warning off
-run_params = readtable(sprintf('%s\\data_%s\\run_parameters_%s.xlsx', code_path, expt_name, expt_name));
+run_params = readtable(sprintf('%s\\data_%s\\run_parameters_%s.xlsx', expt_path, expt_name, expt_name));
 warning on
 
 fprintf('\nwindspeed = %2.f m/s, particle type = %s\n', run_params.WindSpeed_m_s(n), ...
@@ -27,7 +27,7 @@ fprintf('\nwindspeed = %2.f m/s, particle type = %s\n', run_params.WindSpeed_m_s
 
 nonsphere = strncmp(run_params.ParticleType{n},'d',1) || strncmp(run_params.ParticleType{n},'r',1);
 
-load(sprintf('%s\\outputs_%s\\tracks_run%02d.mat', code_path, expt_name, n))
+load(sprintf('%s\\outputs_%s\\tracks_run%02d.mat', expt_path, expt_name, n))
 
 %% remove center bright spot
 spot_x = [0 0.015]; 
@@ -64,7 +64,7 @@ tracks0(:,3) = -tracks0(:,3);  % u
 tracks0(:,10) = -tracks0(:,10);  % theta
 
 %% smooth tracks
-sm_fn = sprintf('%s\\outputs_%s\\smtracks_run%02d.mat', code_path, expt_name, n);
+sm_fn = sprintf('%s\\outputs_%s\\smtracks_run%02d.mat', expt_path, expt_name, n);
 [smtracks, smtracklength, avar_k] = smooth_tracks(tracks0,kernel,1/run_params.imagingFreq_Hz(n));
 if length(kernel) > 1
     figure; semilogy(kernel,avar_k,'k.'); 

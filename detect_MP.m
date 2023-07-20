@@ -548,7 +548,7 @@ toc  % time the computation
 
 %% TRACK PARTICLES
 fs = run_params.imagingFreq_Hz(n);  % imaging freq (Hz)
-searchrad = 10e-3; % search radius (m)
+searchrad = run_params.searchRadius_m(n); % 10e-3; % search radius (m)
 
 tic  % time the computation
 
