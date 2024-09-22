@@ -14,7 +14,7 @@ Baker, L., & DiBenedetto, M. (2023). [Large-scale particle shadow tracking and o
 
 1. Create the input files (see *Inputs*)
 
-2. Create a small subset of images (~100 frames). 
+2. Choose a small subset of images (~100 frames) from one run. 
 
 3. Run main script (detect_MP) on the subset and tune the thresholds in the run_parameters spreadsheet to optimize particle detection and tracking.
 
